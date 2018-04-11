@@ -1,6 +1,7 @@
 # parliamentaryGazette
 ## Modules
 ## Core (business logic)
+The main goal of splitting the my application into two folder, Core and Adapter is to focus on the business logic in the Core and defer the implementation of Input output / interaction with outside world to later. Also, dependency inverstion is used here is the code in the Core folder does not depends on the adapter at all, it know nothing about wehter there is database,file, methodology of retriving data... the Core simply does not care about details, what matters in the Core foler is use cases and business logic.
 ### Interfaces.hs
 in order to follow the hexagonal, clean or port and adapter architecture, I haven't specified IO monad for reading and writing to file, instead, typeclasses are use to provide with abstract function to be used for implemeting only the business rules and differing the mechanism of reading and writing output to later on. However, this approach is also useful for testing the effectful code in a pure manners
 
@@ -22,6 +23,9 @@ this module contains the use case when the total fund for a specific bill exceed
 
 ### Depression.hs
 this module contains the use case then the the total amount a district wishes to pay exceed the collected tax amount.
+
+### Parsing 
+this module contains the parsing for JSON to AX type and vice versa
 
 ## Adapter
 ### JSON.hs
