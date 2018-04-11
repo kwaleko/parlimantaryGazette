@@ -19,8 +19,8 @@ import           Control.Lens(over
 
 import           Prelude hiding ((/))
 -- Reduce the contribution for all bills across all districts when needed
-reduceContribs ::[T.Bill] -> [T.District] ->[T.District]
-reduceContribs   bills  dists = 
+reduceContribs :: [T.District] -> [T.Bill] ->[T.District]
+reduceContribs dists bills = 
   dists >>= \dist -> return $ proportion dist dists bills
 
 
@@ -43,7 +43,7 @@ proportion  currDist dists bills  = let
         actualFundAmount = actualFund  specificFunding
       in
         if (totalFundAmount > neededFundAmount )
-        then specificFunding & T.billSpecificFundingAmount %~ (\x ->  (x *  neededFundAmount) / totalFundAmount)
+        then specificFunding & T.billSpecificFundingAmount %~ (\x -> ( (x *  neededFundAmount) / totalFundAmount))
         else specificFunding
 
 --  warning : this is not safe function, I should come up with better design to avoid such unsafe option

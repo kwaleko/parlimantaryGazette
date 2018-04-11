@@ -55,7 +55,7 @@ parseBill = withObject "bill" $ \o -> do
     amount <- o .: "amount"
     when (amount < 0) $
       fail $ "the fund needed to implement the bill ("++ show name ++  ") should be nonnegative number"
-    return $ Bill name category amount
+    return $ Bill name category amount Nothing
 
  
 instance FromJSON BillSpecificFunding where
@@ -75,7 +75,7 @@ instance FromJSON District where
     categoryDefaultFunding <- o .: "categoryDefaultFunding"
     billSpecificFunding <- o .: "billSpecificFunding"
     caps <- o .: "caps"
-    return $ District name availableFunds categoryDefaultFunding billSpecificFunding caps
+    return $ District name availableFunds categoryDefaultFunding billSpecificFunding caps Nothing
 
 instance FromJSON Bill where
   parseJSON = parseBill

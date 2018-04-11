@@ -19,29 +19,6 @@ import GHC.Generics
 type Error    = String
 type BillId = String 
 
-data ActualFund = ActualFund
-  {
-     obillName :: String
-    ,obillActualFund :: Int
-    ,obillFullyFunded :: Bool
-  } deriving(Eq,Show,Generic)
-
-data ODistrict = ODistrict
-  {
-     odistrictName :: String
-    ,collectedTax :: Int
-    ,refundAmount :: Int
-    ,actualFund :: [ActualFund]
-  }
-
-data OBill = OBill
-  {
-    oBillName :: String
-    ,oBillCategory :: Category
-    ,oBillAmount :: Int
-    ,oActualFund  :: Int
-    
-  }
 
 data JData = JData
   {
@@ -56,13 +33,15 @@ data District = District
     ,_distCategDefault     :: [CategoryDefaultFunding]
     ,_distBillSpecificFund :: [BillSpecificFunding] --  district wishes to pay
     ,_distCaps             :: [Cap]
+    ,_distRefundAmount     :: Maybe Int
   } deriving (Show,Eq,Generic)
 
 data Bill = Bill
   {
-     _billName     :: BillId
-    ,_billCategory :: Category
-    ,_billAmount   :: Int 
+     _billName        :: BillId
+    ,_billCategory    :: Category
+    ,_billAmount      :: Int
+    ,_billFullyFunded :: Maybe Int 
   }deriving (Eq,Show,Generic)
 
 data BillSpecificFunding = BillSpecificFunding
@@ -99,6 +78,7 @@ makeLenses ''BillSpecificFunding
 makeLenses ''Cap
 makeLenses ''CategoryDefaultFunding
 makeLenses ''JData
+
 
 
 

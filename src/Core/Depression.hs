@@ -8,6 +8,9 @@ import Control.Lens( over
 import Prelude hiding((/))
 
 
+--                               U S E  C A S E
+--       
+
 balanceContribs ::      [T.District]
                     ->  [T.Bill]
                     ->  [T.District]
@@ -30,16 +33,14 @@ proportion dist bills = let
     transform  billFund collectedTax  totalDecidedFund billSpecFund =
       T.BillSpecificFunding 
        (billSpecFund ^. T.billSpecificFundingBill) $
-       billFund (billSpecFund ^. T.billSpecificFundingBill) * collectedTax / totalDecidedFund
+       (billFund (billSpecFund ^. T.billSpecificFundingBill) * collectedTax) / totalDecidedFund
 
 
 -- Total Tax collected by a give district
-totalAvailFund :: T.District
-               -> Int
+totalAvailFund :: T.District -> Int
 totalAvailFund  dist = dist ^. T.distAvailableFund
 
--- 
-totalDecidFund :: T.District
-               -> Int
+-- Sum of total amount that a district wishes to pay or plan to pay 
+totalDecidFund :: T.District -> Int
 totalDecidFund dist  =
   foldl (+) 0 $ T._billSpecificFundingAmount <$> dist ^.  T.distBillSpecificFund

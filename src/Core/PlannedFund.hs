@@ -97,6 +97,6 @@ lookupCategoryByBill billId bills =
 (/) :: Int -> Int -> Int
 (/) nb divisor
   | nb `rem` divisor == 0        =  nb `div` divisor
-  | nb `rem` divisor >= divisor  =  nb `div` divisor
-  | True                         =  (+) 1 $ nb `div` divisor
+  | (2 * (nb `rem` divisor)) >= divisor  =(+) 1 $ nb `div` divisor
+  | True                         =   nb `div` divisor
 
