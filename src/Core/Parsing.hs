@@ -119,7 +119,7 @@ instance ToJSON Bill where
   toJSON bill = object [
      "bill" .= toJSON (bill ^. billName)
     ,"category" .= toJSON (bill ^. billCategory)
-    ,"amount"   .= toJSON (bill ^. billAmount)
+    ,"needed fund"   .= toJSON (bill ^. billAmount)
     ,"Received fund" .= toJSON (bill ^. billReceivedFund)
                        ]
 instance ToJSON JSONError
