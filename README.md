@@ -7,7 +7,8 @@ in order to follow the hexagonal, clean or port and adapter architecture, I have
 
 ### Session.hs
 After the meeting of the parlimentary session when the members of all districts have already decided their wishes on what to and the 
-rules are applied, I have divided the problem to the below uses cases and created each use case in a module so any updated or modification for a specific use case could be done easily
+rules are applied, I have divided the problem to the below uses cases and created each use case in a module so any updated or modification for a specific use case could be done easily:
+
 - Prosperity
 - Depression
 - Capping
@@ -25,3 +26,6 @@ this module contains the use case then the the total amount a district wishes to
 ## Adapter
 ### JSON.hs
 implementation of the abstract monad used in the business logic
+
+## Effect 
+this is the glue between the Core and Adapter, in the Effect, the Monad is a monad transformer of Reader over IO, IO to access file system and reader is to avoid the headache of passing the system configuration(filePath here) as parameter
