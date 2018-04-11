@@ -41,7 +41,7 @@ data Bill = Bill
      _billName        :: BillId
     ,_billCategory    :: Category
     ,_billAmount      :: Int
-    ,_billFullyFunded :: Maybe Int 
+    ,_billReceivedFund :: Maybe Int 
   }deriving (Eq,Show,Generic)
 
 data BillSpecificFunding = BillSpecificFunding

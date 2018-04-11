@@ -2,6 +2,7 @@
 module Core.Parsing where
 
 import Control.Monad(when)
+import Control.Lens((^.))
 import Data.Aeson(FromJSON(..)
                  ,ToJSON(..)
                  ,withObject
@@ -88,11 +89,37 @@ instance FromJSON CategoryDefaultFunding where
 
 instance FromJSON Category
 
-instance ToJSON JData
-instance ToJSON District
+
+instance ToJSON JData where
+  --toJSON :: JData -> Value
+  toJSON jData = object [
+     "bills" .= toJSON (jData ^. bills)
+    ,"districts" .= toJSON (jData ^. districts)
+                        ]
+instance ToJSON District where
+  --toJSON :: District -> Value
+  toJSON district = object [
+
+     "district" .= toJSON (district ^. distName)
+    ,"collected tax" .= toJSON (district ^. distAvailableFund)
+    ,"refund amount" .= toJSON (district ^. distRefundAmount)
+    ,"actual fund" .= toJSON (district ^. distBillSpecificFund)
+                           ]
 instance ToJSON CategoryDefaultFunding
-instance ToJSON BillSpecificFunding
+instance ToJSON BillSpecificFunding where
+  --toJSON :: BillSpecificFunding -> Value
+  toJSON specificFunding = object [
+     "bill" .= toJSON (specificFunding ^. billSpecificFundingBill)
+    ,"amount" .= toJSON (specificFunding ^. billSpecificFundingAmount)
+                                  ]
 instance ToJSON Category
 instance ToJSON Cap
-instance ToJSON Bill
+instance ToJSON Bill where
+  --toJSON :: Bill -> Value
+  toJSON bill = object [
+     "bill" .= toJSON (bill ^. billName)
+    ,"category" .= toJSON (bill ^. billCategory)
+    ,"amount"   .= toJSON (bill ^. billAmount)
+    ,"Received fund" .= toJSON (bill ^. billReceivedFund)
+                       ]
 instance ToJSON JSONError
