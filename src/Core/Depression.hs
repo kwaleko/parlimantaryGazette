@@ -8,8 +8,10 @@ import Control.Lens( over
 import Prelude hiding((/))
 
 
---                               U S E  C A S E
---       
+--                                                        U S E  C A S E
+--                 IN CASE THE TOTAL FUND COLLECT BY A GIVEN DISTRICT IS LESS THAN THE SUM OF AMOUNT THAT
+--                 THE DISTRICT WHISHES TO PAY TO FUND VARIOUS FILL, THEN THE DECIDED FUND BY THE GIVEN
+--                 DISTRICT SHOULD BE UPDATED AS PER THE PRINCIPLE OF PROPOSTIONALITY
 
 balanceContribs ::      [T.District]
                     ->  [T.Bill]

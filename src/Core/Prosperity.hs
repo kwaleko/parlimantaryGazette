@@ -13,11 +13,11 @@ import           Control.Lens(over
 
 
 --                                          U S E  C A S E 
---        IN CASE THE TOTAL FUNDING DECIDED ACCROSS ALL DISTRICY EXEEDS THE AMOUNTOF  A
---        SPECIFIC BILL THE CONTRIBUTION BY EACH DISTRICT SHOULD BE REDUCE PROPORTIONALLY 
+--        IN CASE THE TOTAL FUNDING DECIDED ACCROSS ALL DISTRICTS EXCEEDS THE AMOUNT OF  A
+--        SPECIFIC BILL THE CONTRIBUTION BY EACH DISTRICT FOR THAT BILL SHOULD BE REDUCE PROPORTIONALLY 
 
 
-import           Prelude hiding ((/))
+
 -- Reduce the contribution for all bills across all districts when needed
 reduceContribs :: [T.District] -> [T.Bill] ->[T.District]
 reduceContribs dists bills = 
