@@ -7,6 +7,9 @@ import Control.Lens
 import Data.Text
 import Data.Aeson
 import GHC.Generics
+import Data.Map 
+
+import Core.Amount
 
 
 -------------------------------  P O S I T I V E    N U M B E R -----------------------------------------------------------
@@ -29,54 +32,37 @@ data JData = JData
 data District = District
   {
      _distName             :: String
-    ,_distAvailableFund    :: Int
-    ,_distCategDefault     :: [CategoryDefaultFunding]
-    ,_distBillSpecificFund :: [BillSpecificFunding] --  district wishes to pay
-    ,_distCaps             :: [Cap]
-    ,_distRefundAmount     :: Maybe Int
-  } deriving (Show,Eq,Generic)
+    ,_distAvailableFund    :: Amount
+    ,_distCategDefault     :: Map Category Amount
+    ,_distSpecifFunding    :: Map Bill Amount  --  district wishes to pay
+    ,_distCaps             :: Map Category Amount 
+    ,_distRefundAmount     :: Maybe Amount
+  } deriving (Show,Eq,Generic,Ord)
+
 
 data Bill = Bill
   {
-     _billName        :: BillId
-    ,_billCategory    :: Category
-    ,_billAmount      :: Int
-    ,_billReceivedFund :: Maybe Int 
-  }deriving (Eq,Show,Generic)
+     _billName         :: BillId
+    ,_billCategory     :: Category
+    ,_billAmount       :: Amount
+    ,_billReceivedFund :: Maybe Amount 
+  }deriving (Eq,Show,Generic,Ord)
 
-data BillSpecificFunding = BillSpecificFunding
-  {
-     _billSpecificFundingBill   :: BillId
-    ,_billSpecificFundingAmount :: Int
-  } deriving(Eq,Show,Generic)
-
-
-data Cap = Cap
-  {
-     _capCategory :: Category
-    ,_capAmount   :: Int 
-  }deriving(Eq,Show,Generic)
-
-data CategoryDefaultFunding = CategoryDefaultFunding
-  {
-     _categoryDefaultFundingCategory :: Category
-    ,_categoryDefaultFundingAmount   :: Int
-  } deriving(Eq,Show,Generic)
+data LookupError = BillDoesNotExists
+                 | MaxCapMissing String
+                 | BillMissing   String
+  deriving Show
 
 data Category =  Category String
-  deriving(Eq,Show,Generic)
+  deriving(Eq,Show,Generic,Ord)
 
 data JSONError = 
     JSONErrorWrongFormat String
   | JSONErrorReadingFile
   deriving(Eq,Show,Generic)
 
-
 makeLenses ''Bill
 makeLenses ''District
-makeLenses ''BillSpecificFunding
-makeLenses ''Cap
-makeLenses ''CategoryDefaultFunding
 makeLenses ''JData
 
 
