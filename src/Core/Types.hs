@@ -25,8 +25,8 @@ data District = District
      _distName             :: Text
     ,_distAvailableFund    :: Amount
     ,_distCategDefault     :: Map Category Amount
-    ,_distSpecifFunding    :: Map Bill     Amount  --  district wishes to pay
-    ,_distCaps             :: Map Category Amount 
+    ,_distSpecifFunding    :: Map Bill     Amount
+    ,_distCaps             :: Map Category Amount
     ,_distRefundAmount     :: Maybe Amount
   } deriving (Show,Eq,Generic,Ord)
 
