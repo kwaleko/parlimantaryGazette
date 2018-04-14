@@ -2,63 +2,76 @@ module Core.Capping where
 
 import qualified Core.Types as T
 
-import  Core.PlannedFund((/),lookupCategoryByBill)
+--import  Core.PlannedFund((/),lookupCategoryByBill)
 import Control.Lens(over,(^.))
-import Prelude hiding((/))
-import Data.Maybe(isJust,fromJust)
+import Prelude
+import Data.Maybe
+import Core.Amount
+import Data.Either.Utils(maybeToEither)
+import qualified Data.Map as M
+import Control.Monad.Except
 
 
-
-capping :: [T.District] ->  [T.Bill] ->  [T.District]
-capping  dists bills =
-  dists >>= \dist -> balanceContrib dist bills
-  where
-    balanceContrib :: T.District -> [T.Bill] -> [T.District]
-    balanceContrib dist bills =
-      return $ proportion dist bills
+capping :: [T.District] ->  [T.Bill] -> Either String [T.District]
+capping  dists bills = traverse  (proportion bills)  dists 
 
 
-proportion ::  T.District -> [T.Bill] -> T.District
-proportion  dist bills =
+proportion :: [T.Bill] -> T.District -> Either String T.District
+proportion  bills dist =
   let
-    capAmount  = \categ -> maxCap dist categ
-    totalDecidedFund  = \categ -> totalDecidedFundByCategory dist categ bills
+    maxCapFn     = maxCap dist
+    totalFundFn  = totalDecidedFundByCategory dist bills
+    specificFund = M.traverseWithKey (transform maxCapFn totalFundFn) $ T._distSpecifFunding  dist
   in
-    over (T.distBillSpecificFund . traverse ) (transform  capAmount totalDecidedFund) dist
+    T.District                         <$>
+    pure (dist ^. T.distName )         <*>
+    pure (dist ^. T.distAvailableFund) <*>
+    pure (dist ^. T.distCategDefault)  <*>
+    specificFund                       <*>
+    pure (dist ^. T.distCaps)          <*>
+    pure (dist ^. T.distRefundAmount)
   where
-    transform  :: (T.Category -> Int) -> (T.Category -> Int) -> T.BillSpecificFunding -> T.BillSpecificFunding
-    transform    capAmount  totalDecidedFund  billSpecFund =
-      let
-        category = fromJust $ lookupCategoryByBill ( billSpecFund ^. T.billSpecificFundingBill) bills
-        doBalance =  totalDecidedFund category > capAmount category 
-      in
-        case doBalance of
-          True -> T.BillSpecificFunding 
-            (billSpecFund ^. T.billSpecificFundingBill) $ 
-            ((billSpecFund ^. T.billSpecificFundingAmount) * (capAmount category)) / (totalDecidedFund category)
-          False -> billSpecFund
+    transform  :: (T.Category -> Either String Amount)
+               -> (T.Category -> Either String Amount)
+               -> T.Bill
+               -> Amount
+               -> Either String Amount
+    transform  capAmount  totalDecidedFund bill amount  = do
+      category  <- lookupCategoryByBill (bill ^. T.billName) bills
+      totalFund <- totalDecidedFund category
+      maxCap    <- capAmount category
+      if (totalFund > maxCap)
+        then  return amount
+        else  return $  ((amount  * maxCap) / totalFund)
 
-
--- Total decided or planned fun for a given category in a given district
-totalDecidedFundByCategory :: T.District
-                           -> T.Category
+-- Total decided or planned fund for a given category in a given district
+totalDecidedFundByCategory ::
+                              T.District
                            -> [T.Bill]
-                           -> Int
-totalDecidedFundByCategory dist category bills =
-  foldl (+) 0 $ map T._billSpecificFundingAmount $  filter (predicate category)  $ dist ^. T.distBillSpecificFund
-  where 
-    predicate :: T.Category -> T.BillSpecificFunding -> Bool
-    predicate  category specFund =
-     case isJust $ lookupCategoryByBill (specFund ^. T.billSpecificFundingBill) bills of
-       True ->  fromJust ( lookupCategoryByBill (specFund ^. T.billSpecificFundingBill) bills ) == category
-       False -> False
+                           -> T.Category
+                           -> Either String Amount
+totalDecidedFundByCategory  category dist bills = undefined
+--  M.foldl (+) 0 $  M.filter (predicate category) $ dist ^. T.distSpecifFunding
+--  where 
+--    predicate ::  T.Category -> (M.Map T.Bill v) -> Bool
+--    predicate  category specFund =
+--      isJust $ M.lookup (category) specFund
 
+      
+     --case isJust $ lookupCategoryByBill (specFund ^. T.billSpecificFundingBill) bills of
+      --  True ->  fromJust ( lookupCategoryByBill (specFund ^. T.billSpecificFundingBill) bills ) == category
+      -- False -> False
+
+lookupCategoryByBill :: T.BillId -> [T.Bill] -> Either String T.Category
+lookupCategoryByBill billId bills =
+  case lookup  billId billPair of
+    Nothing -> Left ""
+    Just val -> Right val
+  where
+    billPair = zipWith (,) (map T._billName bills ) (map T._billCategory bills)
+  
 
 -- Cap for a given category
-maxCap :: T.District
-       -> T.Category
-       -> Int
-maxCap  dist category = fromJust $ lookup category $
-  zipWith (,) (map T._capCategory categs) (map T._capAmount categs)
-  where
-    categs = dist ^. T.distCaps
+maxCap :: T.District -> T.Category -> Either String Amount
+maxCap  dist category =
+  maybeToEither "" $ M.lookup category $ dist ^.T.distCaps
