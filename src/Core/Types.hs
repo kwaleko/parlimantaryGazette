@@ -3,24 +3,16 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Core.Types where
 
-import Control.Lens
-import Data.Text
-import Data.Aeson
-import GHC.Generics
-import Data.Map 
-
-import Core.Amount
+import                Control.Lens
+import                Data.Text
+import                Data.Map 
+import                GHC.Generics
 
 
--------------------------------  P O S I T I V E    N U M B E R -----------------------------------------------------------
--- THERE IS NOTHING IN THE TYPE THAT PROVE/GURANTEE THAT THE NUMBER SHOULD BE POSITIVE, THIS IS A BAD DESIGN CHOICE CHOICE
--- AND I AM AWARE OF IT, FOR NOW I HAVE UPDATED THE JSON PARSER TO FAIL IF IT CATCHES A NON POSITIVE NUMBER
--- HOWEVER, IT IS BETTER TO EXPRESS IT IN THE TYPE SYSTEM...
-----------------------------------------------------------------------------------------------------------------------------
+import                Core.Amount
 
-
-type Error    = String
-type BillId = String 
+type Error    = Text
+type BillId   = Text 
 
 
 data JData = JData
@@ -31,7 +23,7 @@ data JData = JData
 
 data District = District
   {
-     _distName             :: String
+     _distName             :: Text
     ,_distAvailableFund    :: Amount
     ,_distCategDefault     :: Map Category Amount
     ,_distSpecifFunding    :: Map Bill Amount  --  district wishes to pay
@@ -49,24 +41,18 @@ data Bill = Bill
   }deriving (Eq,Show,Generic,Ord)
 
 data LookupError = BillDoesNotExists
-                 | MaxCapMissing String
-                 | BillMissing   String
+                 | MaxCapMissing Text
+                 | BillMissing   Text
   deriving Show
 
-data Category =  Category String
+data Category =  Category Text
   deriving(Eq,Show,Generic,Ord)
 
 data JSONError = 
-    JSONErrorWrongFormat String
+    JSONErrorWrongFormat Text
   | JSONErrorReadingFile
   deriving(Eq,Show,Generic)
 
 makeLenses ''Bill
 makeLenses ''District
 makeLenses ''JData
-
-
-
-
-
-
