@@ -14,7 +14,6 @@ import                Core.Amount
 type Error    = Text
 type BillId   = Text 
 
-
 data JData = JData
   {
      _bills :: [Bill]
@@ -26,11 +25,10 @@ data District = District
      _distName             :: Text
     ,_distAvailableFund    :: Amount
     ,_distCategDefault     :: Map Category Amount
-    ,_distSpecifFunding    :: Map Bill Amount  --  district wishes to pay
+    ,_distSpecifFunding    :: Map Bill     Amount  --  district wishes to pay
     ,_distCaps             :: Map Category Amount 
     ,_distRefundAmount     :: Maybe Amount
   } deriving (Show,Eq,Generic,Ord)
-
 
 data Bill = Bill
   {
@@ -38,20 +36,19 @@ data Bill = Bill
     ,_billCategory     :: Category
     ,_billAmount       :: Amount
     ,_billReceivedFund :: Maybe Amount 
-  }deriving (Eq,Show,Generic,Ord)
+  }deriving(Eq,Show,Generic,Ord)
 
 data LookupError = BillDoesNotExists
                  | MaxCapMissing Text
                  | BillMissing   Text
-  deriving Show
+                 deriving Show
 
 data Category =  Category Text
-  deriving(Eq,Show,Generic,Ord)
+              deriving (Eq,Show,Generic,Ord)
 
-data JSONError = 
-    JSONErrorWrongFormat Text
-  | JSONErrorReadingFile
-  deriving(Eq,Show,Generic)
+data JSONError = JSONErrorWrongFormat Text
+               | JSONErrorReadingFile
+               deriving (Eq,Show,Generic)
 
 makeLenses ''Bill
 makeLenses ''District
